@@ -102,3 +102,7 @@ if __name__ == '__main__':
 
 # Kirim permintaan HTTP POST ke endpoint /vote
 # $response = Invoke-WebRequest -Uri "http://localhost:5000/vote" -Method POST -Body $payload -ContentType "application/json"
+
+# Tampilkan respons dari server
+# $response.Content
+
