@@ -90,3 +90,15 @@ def full_chain():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
+
+# cara menambahkan data vote
+
+# $candidate = "A" atau A B C
+
+#  $payload = @{
+#     "candidate" = $candidate
+#  } | ConvertTo-Json
+
+# Kirim permintaan HTTP POST ke endpoint /vote
+# $response = Invoke-WebRequest -Uri "http://localhost:5000/vote" -Method POST -Body $payload -ContentType "application/json"
