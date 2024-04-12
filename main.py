@@ -2,18 +2,39 @@ import hashlib
 import json
 from time import time
 from uuid import uuid4
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request 
+
 
 class Blockchain:
     def __init__(self):
+        # Inisialisasi blockchain
         self.chain = []
         self.current_votes = []
-        self.nodes = set()  # Daftar node (misalnya jika digunakan dalam jaringan yang didistribusikan)
+        self.nodes = set()
 
-        # Buat blok genesis
-        self.new_block(previous_hash='1', proof=100)
+        # Coba memuat blockchain dari file JSON saat inisialisasi
+        self.load_blockchain()
+
+    def save_blockchain(self):
+        # Simpan blockchain ke file JSON
+        with open('blockchain.json', 'w') as f:
+            json.dump(self.chain, f)
+
+    def load_blockchain(self):
+        try:
+            # Coba memuat blockchain dari file JSON jika ada
+            with open('blockchain.json', 'r') as f:
+                self.chain = json.load(f)
+        except FileNotFoundError:
+            # Jika file tidak ditemukan, buat blockchain baru
+            self.chain = []
+        except json.JSONDecodeError:
+            # Tangani kesalahan jika JSON tidak dapat diuraikan dengan benar
+            print("Error: Failed to decode JSON file. Creating new blockchain.")
+            self.chain = []
 
     def new_block(self, proof, previous_hash=None):
+        # Fungsi untuk menambahkan blok baru ke blockchain
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
@@ -23,6 +44,7 @@ class Blockchain:
         }
         self.current_votes = []
         self.chain.append(block)
+        self.save_blockchain()  # Simpan blockchain setelah menambahkan blok baru
         return block
 
     def new_vote(self, candidate):
@@ -34,6 +56,7 @@ class Blockchain:
             'voter_id': str(uuid4()),
             'candidate': candidate
         })
+        self.save_blockchain()
         return True
 
     @staticmethod
@@ -90,19 +113,3 @@ def full_chain():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
-
-# cara menambahkan data vote
-
-# $candidate = "A" atau A B C
-
-#  $payload = @{
-#     "candidate" = $candidate
-#  } | ConvertTo-Json
-
-# Kirim permintaan HTTP POST ke endpoint /vote
-# $response = Invoke-WebRequest -Uri "http://localhost:5000/vote" -Method POST -Body $payload -ContentType "application/json"
-
-# Tampilkan respons dari server
-# $response.Content
-
